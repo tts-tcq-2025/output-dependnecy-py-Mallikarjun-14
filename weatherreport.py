@@ -1,6 +1,5 @@
-
-
 def sensorStub():
+    # This stub does NOT expose the bug (precipitation is 70, wind > 50)
     return {
         'temperatureInC': 50,
         'precipitation': 70,
@@ -8,6 +7,14 @@ def sensorStub():
         'windSpeedKMPH': 52
     }
 
+def highPrecipLowWindStub():
+    # This stub triggers the missed case: high precipitation, low wind
+    return {
+        'temperatureInC': 50,
+        'precipitation': 80,  # High
+        'humidity': 80,
+        'windSpeedKMPH': 10   # Low
+    }
 
 def report(sensorReader):
     readings = sensorReader()
@@ -20,25 +27,19 @@ def report(sensorReader):
             weather = "Alert, Stormy with heavy rain"
     return weather
 
-
+# Weak test: passes even though logic is buggy
 def testRainy():
     weather = report(sensorStub)
     print(weather)
     assert("rain" in weather)
 
-
+# Strong test: exposes bug
 def testHighPrecipitation():
-    # This instance of stub needs to be different-
-    # to give high precipitation (>60) and low wind-speed (<50)
+    weather = report(highPrecipLowWindStub)
+    print("High Precip Test:", weather)
+    # This should fail – expected rain but got Sunny Day
+    assert("rain" in weather or "Cloudy" in weather), "Expected rain or cloud-related weather, got: " + weather
 
-    weather = report(sensorStub)
-
-    # strengthen the assert to expose the bug
-    # (function returns Sunny day, it should predict rain)
-    assert(len(weather) > 0);
-
-
-if __name__ == '__main__':
-    testRainy()
-    testHighPrecipitation()
-    print("All is well (maybe!)");
+# Run tests
+testRainy()
+testHighPrecipitation()

@@ -7,8 +7,17 @@ def size(cms):
     else:
         return 'L'
 
+# Existing weak tests
+def test_weak():
+    assert(size(37) == 'S')
+    assert(size(40) == 'M')
+    assert(size(43) == 'L')
+    print("Weak tests passed (but may be misleading)")
 
-assert(size(37) == 'S')
-assert(size(40) == 'M')
-assert(size(43) == 'L')
-print("All is well (maybe!)")
+# Strong test that exposes the bug
+def test_strong():
+    assert(size(38) == 'M'), "Expected 'M' for 38 cms, but got " + size(38)
+
+# Run tests
+test_weak()
+test_strong()
